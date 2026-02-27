@@ -11,13 +11,17 @@ This is a TypeScript-based MCP server that provides integration with ERPNext/Fra
 - JSON format for structured data access
 
 ### Tools
-- `authenticate_erpnext` - Authenticate with ERPNext using username and password
+- `get_doctypes` - Get a list of all available DocTypes
+- `get_doctype_fields` - Get fields list for a specific DocType
 - `get_documents` - Get a list of documents for a specific doctype
+- `get_document` - Get a single document by name, including all child tables
 - `create_document` - Create a new document in ERPNext
 - `update_document` - Update an existing document in ERPNext
+- `delete_document` - Permanently delete a document
+- `submit_document` - Submit a document (set docstatus to 1)
+- `cancel_document` - Cancel a submitted document (set docstatus to 2)
+- `call_method` - Call an ERPNext/Frappe whitelisted server-side API method
 - `run_report` - Run an ERPNext report
-- `get_doctype_fields` - Get fields list for a specific DocType
-- `get_doctypes` - Get a list of all available DocTypes
 
 ## Configuration
 
@@ -82,20 +86,6 @@ npm run inspector
 The Inspector will provide a URL to access debugging tools in your browser.
 
 ## Usage Examples
-
-### Authentication
-```
-<use_mcp_tool>
-<server_name>erpnext</server_name>
-<tool_name>authenticate_erpnext</tool_name>
-<arguments>
-{
-  "username": "your-username",
-  "password": "your-password"
-}
-</arguments>
-</use_mcp_tool>
-```
 
 ### Get Customer List
 ```
