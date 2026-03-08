@@ -66,13 +66,36 @@ class ERPNextClient {
     return this.authenticated;
   }
 
+  // Extract a meaningful error message from a Frappe API error
+  private extractFrappeError(error: any): string {
+    const data = error?.response?.data;
+    if (data) {
+      // Frappe puts the exception string here, e.g. "frappe.exceptions.ValidationError: ..."
+      if (data.exception) {
+        return data.exception;
+      }
+      // Server messages are JSON-encoded arrays of message objects
+      if (data._server_messages) {
+        try {
+          const msgs = JSON.parse(data._server_messages) as any[];
+          const text = msgs.map((m: any) => {
+            const parsed = typeof m === 'string' ? JSON.parse(m) : m;
+            return parsed.message || parsed;
+          }).join('; ');
+          if (text) return text;
+        } catch {}
+      }
+    }
+    return error?.message || 'Unknown error';
+  }
+
   // Get a document by doctype and name
   async getDocument(doctype: string, name: string): Promise<any> {
     try {
       const response = await this.axiosInstance.get(`/api/resource/${doctype}/${name}`);
       return response.data.data;
     } catch (error: any) {
-      throw new Error(`Failed to get ${doctype} ${name}: ${error?.message || 'Unknown error'}`);
+      throw new Error(`Failed to get ${doctype} ${name}: ${this.extractFrappeError(error)}`);
     }
   }
 
@@ -80,23 +103,23 @@ class ERPNextClient {
   async getDocList(doctype: string, filters?: Record<string, any>, fields?: string[], limit?: number): Promise<any[]> {
     try {
       let params: Record<string, any> = {};
-      
+
       if (fields && fields.length) {
         params['fields'] = JSON.stringify(fields);
       }
-      
+
       if (filters) {
         params['filters'] = JSON.stringify(filters);
       }
-      
+
       if (limit) {
         params['limit_page_length'] = limit;
       }
-      
+
       const response = await this.axiosInstance.get(`/api/resource/${doctype}`, { params });
       return response.data.data;
     } catch (error: any) {
-      throw new Error(`Failed to get ${doctype} list: ${error?.message || 'Unknown error'}`);
+      throw new Error(`Failed to get ${doctype} list: ${this.extractFrappeError(error)}`);
     }
   }
 
@@ -108,7 +131,7 @@ class ERPNextClient {
       });
       return response.data.data;
     } catch (error: any) {
-      throw new Error(`Failed to create ${doctype}: ${error?.message || 'Unknown error'}`);
+      throw new Error(`Failed to create ${doctype}: ${this.extractFrappeError(error)}`);
     }
   }
 
@@ -120,7 +143,7 @@ class ERPNextClient {
       });
       return response.data.data;
     } catch (error: any) {
-      throw new Error(`Failed to update ${doctype} ${name}: ${error?.message || 'Unknown error'}`);
+      throw new Error(`Failed to update ${doctype} ${name}: ${this.extractFrappeError(error)}`);
     }
   }
 
@@ -135,7 +158,7 @@ class ERPNextClient {
       });
       return response.data.message;
     } catch (error: any) {
-      throw new Error(`Failed to run report ${reportName}: ${error?.message || 'Unknown error'}`);
+      throw new Error(`Failed to run report ${reportName}: ${this.extractFrappeError(error)}`);
     }
   }
 
