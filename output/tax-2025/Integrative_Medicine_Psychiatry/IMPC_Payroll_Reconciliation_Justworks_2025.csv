@@ -1,0 +1,7 @@
+entity,payroll_provider,employee_name,department,first_period,last_period,gross_earnings,ss_employer,medicare_employer,futa,ny_sui,ny_reemployment,oh_sui,pa_sui,total_employer_cost
+Integrative Medicine Psychiatry PC,Justworks,"Pastron, Saaema",Practitioner,2025-01-12,2025-12-27,99449.85,6165.9,1442.04,21.75,0.0,0.0,151.86,0.0,7781.55
+Integrative Medicine Psychiatry PC,Justworks,"Lewinn, Ashley",Practitioner,2025-01-12,2025-12-27,65704.48,4073.69,952.7,26.72,690.35,7.68,0.0,0.0,5751.14
+Integrative Medicine Psychiatry PC,Justworks,"Rolland, Heather",Practitioner,2025-01-12,2025-12-27,44795.01,2777.34,649.55,35.11,784.37,8.73,0.0,0.0,4255.1
+Integrative Medicine Psychiatry PC,Justworks,"MacArthur, Megan",Admin,2025-01-12,2025-12-27,39348.75,2439.63,570.56,38.2,0.0,0.0,0.0,358.02,3406.41
+Integrative Medicine Psychiatry PC,Justworks,"Quesnelle, Vanessa",Management,2025-01-12,2025-05-31,38768.36,2403.65,562.14,0.46,393.75,4.4,0.0,0.0,3364.4
+Integrative Medicine Psychiatry PC,Justworks,"Coddington, Carly",TMS,2025-03-23,2025-12-27,19100.0,1184.22,276.94,49.8,947.3,10.58,0.0,0.0,2468.84

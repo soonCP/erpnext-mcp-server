@@ -1,0 +1,4 @@
+entity,payroll_provider,employee_name,gross_earnings,federal_income_tax,ss_employee,medicare_employee,ny_state_tax,nyc_tax,total_employee_taxes,net_pay,ss_employer,medicare_employer,futa,total_employer_taxes
+Integrative Medicine Psychiatry PC,Rippling,Beata Lewis,21873.5,1738.19,1356.15,317.17,805.47,589.86,4907.29,16966.16,1356.16,317.17,42.0,2160.11
+Integrative Medicine Psychiatry PC,Rippling,Ishaa Diwakar,7987.5,324.18,495.23,115.82,217.0,169.99,1364.53,6622.96,495.22,115.81,42.02,930.61
+Integrative Medicine Psychiatry PC,Rippling,Chelsea Tara Karpeh,7039.5,956.53,436.45,102.07,283.5,212.42,2024.39,5015.1,436.45,102.08,42.0,825.15

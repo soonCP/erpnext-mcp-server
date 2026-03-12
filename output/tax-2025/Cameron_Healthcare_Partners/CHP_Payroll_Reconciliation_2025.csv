@@ -1,0 +1,5 @@
+entity,payroll_provider,employee_name,gross_earnings,federal_income_tax,ss_employee,medicare_employee,ny_state_tax,nyc_tax,nj_state_tax,ct_state_tax,total_employee_taxes,employee_deductions,net_pay,ss_employer,medicare_employer,futa,ny_employer_taxes,nj_employer_taxes,ct_employer_taxes,total_employer_taxes,company_deductions
+Cameron Healthcare Partners LLC,Rippling,Vanessa Jane Quesnelle,55416.62,2704.24,3228.75,755.11,2416.96,1819.3,0.0,0.0,11157.6,3340.19,40918.84,3228.73,755.12,42.0,757.99,0.0,0.0,4550.6,3500.0
+Cameron Healthcare Partners LLC,Rippling,Jonathan Venuto,49583.32,2924.87,3074.17,718.97,0.0,0.0,1803.37,0.0,8983.1,0.0,40600.23,3074.16,718.95,42.0,0.0,1558.81,0.0,5393.92,0.0
+Cameron Healthcare Partners LLC,Rippling,Soon Hyouk Lee,46249.98,465.53,2442.2,571.15,0.0,0.0,0.0,1180.1,4855.94,6859.36,34534.63,2442.23,571.16,42.0,0.0,0.0,771.16,3629.59,4000.0
+Cameron Healthcare Partners LLC,Rippling,Bonnie Eden Tran,8568.75,497.24,531.27,124.25,323.82,209.56,0.0,0.0,1729.31,0.0,6839.43,531.26,124.24,42.02,394.46,0.0,0.0,1048.81,0.0

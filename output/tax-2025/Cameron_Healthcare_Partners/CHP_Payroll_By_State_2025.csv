@@ -1,0 +1,5 @@
+employee_name,gross_earnings,work_state,ny_state_tax,nyc_tax,nj_state_tax,ct_state_tax,ny_sui,nj_sui_employer,ct_sui_employer
+Bonnie Eden Tran,8568.75,NYC,323.82,209.56,0.0,0.0,344.87,0.0,0.0
+Jonathan Venuto,49583.32,NJ,0.0,0.0,1803.37,0.0,0.0,1291.43,0.0
+Soon Hyouk Lee,46249.98,CT,0.0,0.0,0.0,1180.1,0.0,0.0,574.2
+Vanessa Jane Quesnelle,55416.62,NYC,2416.96,1819.3,0.0,0.0,515.15,0.0,0.0
