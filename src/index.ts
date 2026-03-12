@@ -153,7 +153,8 @@ class ERPNextClient {
       const response = await this.axiosInstance.get(`/api/method/frappe.desk.query_report.run`, {
         params: {
           report_name: reportName,
-          filters: filters ? JSON.stringify(filters) : undefined
+          filters: filters ? JSON.stringify(filters) : undefined,
+          are_default_filters: 0
         }
       });
       return response.data.message;

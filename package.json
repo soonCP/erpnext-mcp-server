@@ -5,20 +5,25 @@
   "private": true,
   "type": "module",
   "bin": {
-    "erpnext-server": "./build/index.js"
+    "erpnext-server": "./build/index.js",
+    "quickbooks-server": "./build/quickbooks/index.js"
   },
   "files": [
     "build"
   ],
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755'); require('fs').chmodSync('build/quickbooks/index.js', '755');\"",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js",
+    "inspector:qb": "npx @modelcontextprotocol/inspector build/quickbooks/index.js",
+    "qb:auth": "tsc && node build/quickbooks/oauth-setup.js",
+    "qb:auth:manual": "tsc && node build/quickbooks/oauth-manual.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "0.6.0",
-    "axios": "^1.8.4"
+    "axios": "^1.8.4",
+    "dotenv": "^17.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
