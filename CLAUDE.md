@@ -122,13 +122,16 @@ Earlier months (Feb–Apr 2025) used a direct approach: DR expense / CR Mercury 
   YYYY.MM.DD_Cameron Healthcare Partners LLC accounting export.csv  # Individual pay periods
 ```
 
-## Data Flow: Payroll (Justworks → IMPC/QBO)
+## Data Flow: Payroll (Justworks + Rippling → IMPC/QBO)
 
 ### Source
-Justworks payroll platform — used for IMPC (the medical practice). Justworks handles payroll, benefits, and compliance for IMPC employees.
+IMPC uses two payroll providers:
+- **Justworks** (PEO) — Justworks is the employer of record and files payroll taxes under Justworks' EIN, not IMPC's
+- **Rippling** (non-PEO) — Rippling is the payroll processor only; payroll taxes are filed under IMPC's EIN
 
 ### Import Process
-IMPC payroll is recorded in QuickBooks Online. Justworks transactions appear as bank feed items in the Chase checking account and are categorized in QBO.
+- **Justworks** payroll: transactions appear as bank feed items in the Chase checking account and are categorized in QBO
+- **Rippling** payroll: auto-syncs to QBO via Rippling's built-in accounting integration (no manual CSV export needed — unlike CHP which requires manual export for ERPNext)
 
 ### BigQuery Analytics
 **`../claude_mcp/src/load_justworks_to_bq.py`** — Loads Justworks invoice detail CSVs to BigQuery (`integrative-mind-dw.justworks_payroll.invoice_details`) for analysis and reconciliation.
@@ -192,6 +195,74 @@ Additional data loaders in `../claude_mcp/src/`:
 - `load_erpnext_to_bq.py` — ERPNext accounting data → BigQuery
 
 All use GCP service account authentication.
+
+## Playwright MCP (Browser Automation)
+
+Configured in `.mcp.json` using `@playwright/mcp@latest --browser chromium`. Launches headed Chromium via WSLg.
+
+**Important:**
+- Do NOT use the `playwright` npm library directly — Cloudflare Turnstile blocks Playwright's bundled Chromium
+- Use the Playwright MCP tools instead — user logs in interactively (handles 2FA), then Claude drives navigation
+- Do NOT pass `--headed` (default since 0.0.68); MUST pass `--browser chromium`
+- Chromium at `~/.cache/ms-playwright/chromium-1208/`
+- WSLg env: `DISPLAY=:0`, `WAYLAND_DISPLAY=wayland-0`, `XDG_RUNTIME_DIR=/run/user/1000/`
+
+### Justworks (IMPC) — Playwright Flows
+
+Justworks is a PEO — files payroll taxes under Justworks' EIN, not IMPC's.
+
+**Invoice Details Download:**
+1. Navigate to `https://secure.justworks.com` → user logs in (email + password + 2FA)
+2. Navigate to `https://secure.justworks.com/reports/request?report_type=invoice_details&year={YEAR}`
+3. Wait for "Report successfully generated", click "Download Report"
+4. CSV downloads to `.playwright-mcp/`
+
+**Tax Documents (941s, W-2s):**
+1. Navigate to `https://payroll.justworks.com/company/company_01fn4w79xrzy2hm9z92n2dfdsr/documents/tax_report` (or `/documents/w2`)
+2. PDFs are embedded in iframes — clicking "Download" navigates away instead of downloading
+3. Workaround: click the document name link to open the view page, then use `browser_evaluate` to extract the iframe's S3 signed URL:
+   ```js
+   () => { const iframe = document.querySelector('iframe'); return iframe ? iframe.src : 'no iframe'; }
+   ```
+4. Download the S3 URL via `curl` (strip the `#fragment`), naming the file appropriately
+5. Signed URLs expire in 300 seconds — download promptly after extracting
+
+**Save to:** `output/tax-{YEAR}/Integrative_Medicine_Psychiatry/payroll/`
+
+### Rippling (CHP + IMPC) — Playwright Flows
+
+Rippling is used for both CHP and IMPC payroll. IMPC employees on Rippling are paid directly by IMPC (Rippling is the payroll processor, NOT a PEO — payroll taxes are filed under IMPC's EIN). This is separate from Justworks (PEO) above.
+
+IMPC has multiple pay schedules on Rippling:
+- Semi-monthly pay schedule (Bliss)
+- Hourly Semi-Monthly Schedule
+- Integrative Mind - Hourly Bi-weekly
+
+CHP has one pay schedule:
+- Semi-monthly pay schedule
+
+**Tax Documents (W-2s, 940, 941 packages):**
+1. Navigate to `https://app.rippling.com` → user logs in (email + password + 2FA)
+2. Accessing Payroll requires step-up identity verification (text/call to phone)
+3. Navigate to `https://app.rippling.com/payroll/dashboard` → Documents tab → Previous Filings (Documents)
+4. Click each download button — files download directly to `.playwright-mcp/`
+5. Available documents for a given year: W-2s, Year End Package, Form 940, Combined Returns Packages (per quarter), IRS Quarterly Packages
+6. Documents are per-entity — filter by entity if needed
+
+**Accounting Exports (CHP only — for ERPNext import via `convert_rippling.py`):**
+IMPC Rippling payroll auto-syncs to QBO via integration, so only CHP pay runs need manual CSV export.
+1. Same Rippling session (already authenticated)
+2. Navigate to Payroll Overview → Paid tab (`https://app.rippling.com/payroll/dashboard/overview?section=paid`)
+3. Click into a specific completed CHP pay run (e.g., "Mar 1st - Mar 15th: Cameron Healthcare Partners LLC")
+4. On the pay run status page, click "More Options" (⋮ button next to "Preview and Reports")
+5. Select "Email/Download general ledger CSV Journal"
+6. In the dialog, check "Download the CSV journal" and click Continue
+7. CSV downloads to `.playwright-mcp/` — rename and save to `../FinancialIntelligencer/input/` with naming convention: `YYYY.MM.DD_Cameron Healthcare Partners LLC accounting export.csv`
+8. Run `../FinancialIntelligencer/convert_rippling.py` to import into ERPNext
+
+**Save tax docs to:**
+- CHP: `output/tax-{YEAR}/Cameron_Healthcare_Partners/payroll/`
+- IMPC: `output/tax-{YEAR}/Integrative_Medicine_Psychiatry/payroll/`
 
 ## Report Distribution (rclone → Google Shared Drives)
 
